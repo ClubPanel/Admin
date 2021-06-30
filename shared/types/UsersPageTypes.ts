@@ -3,6 +3,8 @@ export interface UsersPageData {
 }
 
 export interface UsersPageUser {
+  email: string;
   username: string;
   userId: number;
+  permissions: string[];
 }

@@ -21,7 +21,7 @@ export const register = (express: Express) => {
         };
 
         for (const doc of docs) {
-          output.users.push({username: doc.username, userId: doc.id});
+          output.users.push({email: doc.email, username: doc.username, userId: doc.id, permissions: doc.permissions});
         }
 
         resolve(output);
