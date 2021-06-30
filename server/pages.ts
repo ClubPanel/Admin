@@ -5,10 +5,19 @@ import {dataFunctions} from "./server";
 import {UsersPageData} from "../shared/types/UsersPageTypes";
 import {Express} from "express";
 import {GetConfig} from "../../../shared/config/configStore";
+import {requireAuth} from "../../../server/util/auth";
 
-export const register = (express: Express) => {
+export const register = (app: Express) => {
   const configs = GetConfig<AdminConfig>("client/admin.json");
 
+  registerPages(configs);
+
+  for (const key of Object.keys(dataFunctions)) {
+    app.use(key, requireAuth());
+  }
+};
+
+const registerPages = (configs: AdminConfig) => {
   dataFunctions[configs.usersPageURL] = (userInfo) : Promise<object> => {
     return new Promise<object>((resolve, reject) => {
       if(!hasPermission(userInfo.permissions, "admin", "module.admin.users")) return resolve({});
