@@ -1,5 +1,5 @@
 import {AdminConfig} from "../config/AdminConfig";
-import {hasPermission} from "../../../server/util/permissions";
+import {hasPermission} from "../../../shared/util/permissions";
 import User from "../../../server/database/models/user";
 import {dataFunctions} from "./server";
 import {UsersPageData} from "../shared/types/UsersPageTypes";

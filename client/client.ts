@@ -3,7 +3,7 @@ import {GetConfig} from "../../../shared/config/configStore";
 import {AdminConfig} from "../config/AdminConfig";
 import {MenuLinks, RegisterAdminPage} from "./api";
 import {PreRenderType, RegisterClientSideType, RenderType} from "../../../shared/module/moduleClient";
-import {hasPermission} from "../../../server/util/permissions";
+import {hasPermission} from "../../../shared/util/permissions";
 
 const permissionReqs: Record<string, string[]> = {};
 
