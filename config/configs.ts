@@ -11,10 +11,10 @@ const config = {
     {
       text: "Users",
       aria: "Users Page",
-      url: "/users"
+      url: "/admin/users"
     }
   ],
   usersPageEnabled: true,
-  usersPageURL: "/users",
+  usersPageURL: "/admin/users",
   usersPageName: "Users"
 };
