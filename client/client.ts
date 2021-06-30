@@ -25,8 +25,10 @@ export const register: RegisterClientSideType = (RegisterClientPage) => {
 export const preRender: PreRenderType = (props) => {
   if(!permissionReqs.hasOwnProperty(props.props.location) || hasPermission(props.props.userInfo.permissions, ...permissionReqs[props.props.location])) return;
 
+  const configs = GetConfig<AdminConfig>("client/admin.json", props.props.config);
+
   props["redirect"] = {
-    destination: "/",
+    destination: configs.accessDeniedRedirectURL,
     permanent: false
   };
 };
