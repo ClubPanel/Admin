@@ -11,7 +11,7 @@ export const register = (express: Express) => {
 
   dataFunctions[configs.usersPageURL] = (userInfo) : Promise<object> => {
     return new Promise<object>((resolve, reject) => {
-      if(!hasPermission(userInfo.permissions, "admin")) return resolve({});
+      if(!hasPermission(userInfo.permissions, "admin", "module.admin.users")) return resolve({});
 
       User.find((err, docs) => {
         if(err) return reject(err);
