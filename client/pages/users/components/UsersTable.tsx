@@ -1,11 +1,49 @@
-import {Table, TableCaption, Tbody, Td, Th, Thead, Tr} from "@chakra-ui/react";
+import {IconButton, Table, TableCaption, Tbody, Td, Th, Thead, Tr, useToast} from "@chakra-ui/react";
 import {UsersPageUser} from "../../../../shared/types/UsersPageTypes";
 import React from "react";
 import UserPermissions from "./UserPermissions";
+import {DeleteIcon, MinusIcon} from "@chakra-ui/icons";
+import {UserDeleteButton} from "./UserDeleteButton";
+import axios from "axios";
 
 const UsersTable = ({ users, csrf } : { users: UsersPageUser[], csrf: string }) : JSX.Element => {
   const thProps = {color: "white", border: "1px solid white"};
   const tdProps = {border: "1px solid white"};
+
+  const toast = useToast();
+
+  const deleteUserButton = (user: number) => {
+    axios.post("/adminmodulebackend/deleteuser", {csrf, user}).then(res => {
+      toast({
+        title: "Success",
+        description: res.data,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-left"
+      });
+    }).catch(e => {
+      if(e?.response?.data) {
+        toast({
+          title: "Error",
+          description: e.response.data,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom-left"
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "An error occurred. Please try again.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom-left"
+        });
+      }
+    });
+  };
 
   return (
     <Table
@@ -36,7 +74,9 @@ const UsersTable = ({ users, csrf } : { users: UsersPageUser[], csrf: string }) 
               <Td {...tdProps} maxW="100vh">
                 <UserPermissions csrf={csrf} permissions={user.permissions} user={user.userId}/>
               </Td>
-              <Td {...tdProps}>TODO</Td>
+              <Td {...tdProps}>
+                <UserDeleteButton user={user.userId} callback={deleteUserButton}/>
+              </Td>
             </Tr>
           );
         })}

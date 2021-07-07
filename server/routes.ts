@@ -93,4 +93,34 @@ export const Setup = (app: Express, configs: AdminConfig) => {
 
     res.status(200).send("Successfully removed permission!");
   });
+
+  // @ts-ignore
+  app.post("/adminmodulebackend/deleteuser", requireBaseReferrer(), bodyParser.json(), requireCSRF(), requireAuth(), requirePermission("admin", "module.admin.users"), async (req, res) => {
+    if(!req.body) {
+      return res.status(400).send("A body is required!");
+    }
+
+    const data = <{user: number}>req.body;
+
+    if(typeof(data.user) !== "number") {
+      return res.status(400).send("The user field must be a number!");
+    }
+
+    const user = await User.findOne({id: data.user});
+
+    if(!user) {
+      return res.status(400).send("The specified user does not exist!");
+    }
+
+    if(hasPermission(user.permissions, "owner")) {
+      return res.status(400).send("The owner cannot be deleted!");
+    }
+    if(hasPermission(user.permissions, "admin") && !hasPermission(req.session.user.permissions, "owner")) {
+      return res.status(400).send("Only the owner can delete an admin!");
+    }
+
+    await user.delete();
+
+    res.status(200).send("Successfully deleted user!");
+  });
 };
