@@ -6,6 +6,7 @@ import {UsersPageData} from "../shared/types/UsersPageTypes";
 import {Express} from "express";
 import {GetConfig} from "../../../shared/config/configStore";
 import {requireAuth} from "../../../server/util/auth";
+import {Setup} from "./routes";
 
 export const register = (app: Express) => {
   const configs = GetConfig<AdminConfig>("client/admin.json");
@@ -15,6 +16,8 @@ export const register = (app: Express) => {
   for (const key of Object.keys(dataFunctions)) {
     app.use(key, requireAuth());
   }
+
+  Setup(app, configs);
 };
 
 const registerPages = (configs: AdminConfig) => {
