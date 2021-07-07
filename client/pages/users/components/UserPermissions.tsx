@@ -24,6 +24,9 @@ const UserPermissions = ({csrf, permissions, user} : { csrf: string, permissions
         isClosable: true,
         position: "bottom-left"
       });
+
+      setPerms(perms.concat([fixedPermission]));
+      setText("");
     }).catch(e => {
       if(e?.response?.data) {
         toast({
@@ -45,9 +48,6 @@ const UserPermissions = ({csrf, permissions, user} : { csrf: string, permissions
         });
       }
     });
-
-    setPerms(perms.concat([fixedPermission]));
-    setText("");
   };
 
   const removePermission = (name: string) => {
@@ -60,6 +60,8 @@ const UserPermissions = ({csrf, permissions, user} : { csrf: string, permissions
         isClosable: true,
         position: "bottom-left"
       });
+
+      setPerms(perms.filter(perm => perm !== name));
     }).catch(e => {
       if(e?.response?.data) {
         toast({
@@ -81,8 +83,6 @@ const UserPermissions = ({csrf, permissions, user} : { csrf: string, permissions
         });
       }
     });
-
-    setPerms(perms.filter(perm => perm !== name));
   };
 
   return (

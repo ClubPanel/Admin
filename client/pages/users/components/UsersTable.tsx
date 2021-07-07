@@ -1,6 +1,6 @@
 import {IconButton, Table, TableCaption, Tbody, Td, Th, Thead, Tr, useToast} from "@chakra-ui/react";
 import {UsersPageUser} from "../../../../shared/types/UsersPageTypes";
-import React from "react";
+import React, {useState} from "react";
 import UserPermissions from "./UserPermissions";
 import {DeleteIcon, MinusIcon} from "@chakra-ui/icons";
 import {UserDeleteButton} from "./UserDeleteButton";
@@ -12,6 +12,8 @@ const UsersTable = ({ users, csrf } : { users: UsersPageUser[], csrf: string }) 
 
   const toast = useToast();
 
+  const [usersArr, setUsers] = useState(users);
+
   const deleteUserButton = (user: number) => {
     axios.post("/adminmodulebackend/deleteuser", {csrf, user}).then(res => {
       toast({
@@ -22,6 +24,8 @@ const UsersTable = ({ users, csrf } : { users: UsersPageUser[], csrf: string }) 
         isClosable: true,
         position: "bottom-left"
       });
+
+      setUsers(usersArr.filter(userInfo => userInfo.userId !== user));
     }).catch(e => {
       if(e?.response?.data) {
         toast({
@@ -63,7 +67,7 @@ const UsersTable = ({ users, csrf } : { users: UsersPageUser[], csrf: string }) 
         </Tr>
       </Thead>
       <Tbody>
-        {users.map(user => {
+        {usersArr.map(user => {
           return (
             <Tr
               key={user.userId}
