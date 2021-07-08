@@ -1,9 +1,10 @@
 import {RenderProps} from "../../../pages/[[...name]]";
 import {GetConfig} from "../../../shared/config/configStore";
-import {AdminConfig} from "../config/AdminConfig";
+import {AdminConfig} from "../config/types/AdminConfig";
 import {MenuLinks, RegisterAdminPage} from "./api";
-import {PreRenderType, RegisterClientSideType, RenderType} from "../../../shared/module/moduleClient";
+import {ClientRegisterCallback, PreRenderType, RegisterClientSideType, RenderType} from "../../../shared/module/moduleClient";
 import {hasPermission} from "../../../shared/util/permissions";
+import {UsersConfigs} from "../config/types/UsersConfigs";
 
 const permissionReqs: Record<string, (string | string[])[]> = {};
 
@@ -14,11 +15,17 @@ export const register: RegisterClientSideType = (RegisterClientPage) => {
     RegisterAdminPage(link);
   }
 
-  if(configs.usersPageEnabled) {
-    RegisterClientPage(configs.usersPageURL, {
-      name: configs.usersPageName
+  registerPages(configs, RegisterClientPage);
+};
+
+const registerPages = (configs: AdminConfig, RegisterClientPage: ClientRegisterCallback) => {
+  const usersConfigs = GetConfig<UsersConfigs>("client/admin/users.json");
+
+  if(usersConfigs.usersPageEnabled) {
+    RegisterClientPage(usersConfigs.usersPageURL, {
+      name: usersConfigs.usersPageName
     }, "./client/pages/users/UsersPage.tsx");
-    permissionReqs[configs.usersPageURL] = ["admin", "module.admin.users"];
+    permissionReqs[usersConfigs.usersPageURL] = ["admin", "module.admin.users"];
   }
 };
 

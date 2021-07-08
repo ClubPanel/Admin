@@ -2,6 +2,7 @@ import {RegisterConfig} from "../../../shared/config/configFilesManager";
 
 export const registerConfigs = () => {
   RegisterConfig({name: "client/admin.json", default: config});
+  RegisterConfig({name: "client/admin/users.json", default: usersConfig});
 };
 
 const config = {
@@ -15,7 +16,10 @@ const config = {
       aria: "Users Page",
       url: "/admin/users"
     }
-  ],
+  ]
+};
+
+const usersConfig = {
   usersPageEnabled: true,
   usersPageURL: "/admin/users",
   usersPageName: "Users"

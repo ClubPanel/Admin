@@ -1,4 +1,4 @@
-import {AdminConfig} from "../config/AdminConfig";
+import {AdminConfig} from "../config/types/AdminConfig";
 import {hasPermission} from "../../../shared/util/permissions";
 import User from "../../../server/database/models/user";
 import {dataFunctions} from "./server";
@@ -7,6 +7,7 @@ import {Express} from "express";
 import {GetConfig} from "../../../shared/config/configStore";
 import {requireAuth} from "../../../server/util/auth";
 import {Setup} from "./routes";
+import {UsersConfigs} from "../config/types/UsersConfigs";
 
 export const register = (app: Express) => {
   const configs = GetConfig<AdminConfig>("client/admin.json");
@@ -21,7 +22,9 @@ export const register = (app: Express) => {
 };
 
 const registerPages = (configs: AdminConfig) => {
-  dataFunctions[configs.usersPageURL] = (userInfo) : Promise<object> => {
+  const usersConfigs = GetConfig<UsersConfigs>("client/admin/users.json");
+
+  dataFunctions[usersConfigs.usersPageURL] = (userInfo) : Promise<object> => {
     return new Promise<object>((resolve, reject) => {
       if(!hasPermission(userInfo.permissions, "admin", "module.admin.users")) return resolve({});
 

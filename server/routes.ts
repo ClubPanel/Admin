@@ -1,5 +1,5 @@
 import {Express, urlencoded} from "express";
-import {AdminConfig} from "../config/AdminConfig";
+import {AdminConfig} from "../config/types/AdminConfig";
 import {requireAuth} from "../../../server/util/auth";
 import {requireBaseReferrer} from "../../../server/util/referrer";
 import {requireCSRF} from "../../../server/util/csrf";
