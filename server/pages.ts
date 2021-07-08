@@ -9,7 +9,7 @@ import {requireAuth} from "../../../server/util/auth";
 import {Setup} from "./routes";
 import {UsersConfigs} from "../config/types/UsersConfigs";
 import {ModerationConfigs} from "../config/types/ModerationConfigs";
-import {ModerationAction} from "../shared/types/ModerationPageTypes";
+import {IssuerInfo, ModerationAction} from "../shared/types/ModerationPageTypes";
 import * as Path from "path";
 
 export const register = (app: Express) => {
@@ -48,17 +48,28 @@ const registerPages = (configs: AdminConfig) => {
     });
   };
 
-  dataFunctions[Path.join(moderationConfigs.moderationPageURL, "/*").replace(/\\/g, "/")] = (userInfo, session) : Promise<object> => {
-    return new Promise<object>((resolve, reject) => {
-      if(!hasPermission(userInfo.permissions, "admin", "module.admin.moderation")) return resolve({});
+  dataFunctions[Path.join(moderationConfigs.moderationPageURL, "/*").replace(/\\/g, "/")] = async (userInfo, session) : Promise<object> => {
+    if(!hasPermission(userInfo.permissions, "admin", "module.admin.moderation")) return {};
 
-      const actions: ModerationAction[] = session.user.modules["admin_moderation"] || [];
-      const user: UsersPageUser = {email: userInfo.email, permissions: userInfo.permissions, userId: userInfo.userId, username: userInfo.username};
+    const actions: ModerationAction[] = session.user.modules["admin_moderation"] || [];
+    const user: UsersPageUser = {email: userInfo.email, permissions: userInfo.permissions, userId: userInfo.userId, username: userInfo.username};
+    const issuers: Record<number, IssuerInfo> = {};
 
-      resolve({
-        user,
-        actions
-      });
-    });
+    for (const action of actions) {
+      if(issuers.hasOwnProperty(action.issuer)) continue;
+
+      const issuer = await User.findOne({id: action.issuer});
+      if(!issuer) {
+        issuers[action.issuer] = {email: "Unknown", username: "Unknown"};
+      } else {
+        issuers[action.issuer] = {email: issuer.email, username: issuer.username};
+      }
+    }
+
+    return {
+      user,
+      actions,
+      issuers
+    };
   };
 };

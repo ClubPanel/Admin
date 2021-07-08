@@ -3,7 +3,7 @@ import {UsersPageUser} from "../../../../shared/types/UsersPageTypes";
 import React, {useState} from "react";
 import UserPermissions from "./UserPermissions";
 import {DeleteIcon, MinusIcon} from "@chakra-ui/icons";
-import {UserDeleteButton} from "./UserDeleteButton";
+import {DeleteButton} from "../../../components/DeleteButton";
 import axios from "axios";
 
 const UsersTable = ({ users, csrf } : { users: UsersPageUser[], csrf: string }) : JSX.Element => {
@@ -79,7 +79,7 @@ const UsersTable = ({ users, csrf } : { users: UsersPageUser[], csrf: string }) 
                 <UserPermissions csrf={csrf} permissions={user.permissions} user={user.userId}/>
               </Td>
               <Td {...tdProps}>
-                <UserDeleteButton user={user.userId} callback={deleteUserButton}/>
+                <DeleteButton index={user.userId} callback={deleteUserButton} warningMessage="Deleting a user will permanently wipe all of their data, including any moderation actions taken against them." aria="Delete user"/>
               </Td>
             </Tr>
           );

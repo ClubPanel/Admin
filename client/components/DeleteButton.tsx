@@ -2,7 +2,7 @@ import {DeleteIcon} from "@chakra-ui/icons";
 import {Button, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useDisclosure} from "@chakra-ui/react";
 import React, {useRef} from "react";
 
-export const UserDeleteButton = ({user, callback} : { user: number, callback: Function }) : JSX.Element => {
+export const DeleteButton = ({index, callback, warningMessage, aria} : { index: number, callback: Function, warningMessage: string, aria: string }) : JSX.Element => {
   const triggerButton = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -12,7 +12,7 @@ export const UserDeleteButton = ({user, callback} : { user: number, callback: Fu
         ref={triggerButton}
         d="inline-block"
         bg="dark.700"
-        aria-label="Delete user"
+        aria-label={aria}
         icon={<DeleteIcon/>}
         onClick={onOpen}
         _hover={{bg: "dark.300"}}
@@ -33,12 +33,12 @@ export const UserDeleteButton = ({user, callback} : { user: number, callback: Fu
           <ModalHeader>Are you sure?</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            Deleting a user will permanently wipe all of their data, including any moderation actions taken against them.
+            {warningMessage}
           </ModalBody>
           <ModalFooter>
             <Button bg="dark.600" onClick={() => {
               onClose();
-              callback(user);
+              callback(index);
             }}>Delete</Button>
           </ModalFooter>
         </ModalContent>

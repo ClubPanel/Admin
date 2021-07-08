@@ -3,14 +3,20 @@ import {UsersPageUser} from "./UsersPageTypes";
 export interface ModerationPageData {
   user: UsersPageUser;
   actions: ModerationAction[];
+  issuers: Record<number, IssuerInfo>;
 }
 
 export interface ModerationAction {
   type: ModerationType;
   issuer: number;
   message: number;
-  date: Date;
+  date: number;
   duration: number;
+}
+
+export interface IssuerInfo {
+  username: string;
+  email: string;
 }
 
 export enum ModerationType {
@@ -19,3 +25,10 @@ export enum ModerationType {
   Suspension = 2,
   Expulsion = 3
 }
+
+export const ModerationTypesMap = [
+  "Warning",
+  "Activity Suspension",
+  "Suspension",
+  "Expulsion"
+];
