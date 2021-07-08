@@ -75,7 +75,7 @@ const UsersTable = ({ users, csrf } : { users: UsersPageUser[], csrf: string }) 
               <Td {...tdProps} isNumeric>{user.userId}</Td>
               <Td {...tdProps}>{user.email}</Td>
               <Td {...tdProps}>{user.username}</Td>
-              <Td {...tdProps} maxW="100vh">
+              <Td {...tdProps} maxW="50vh">
                 <UserPermissions csrf={csrf} permissions={user.permissions} user={user.userId}/>
               </Td>
               <Td {...tdProps}>
