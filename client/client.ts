@@ -5,6 +5,8 @@ import {MenuLinks, RegisterAdminPage} from "./api";
 import {ClientRegisterCallback, PreRenderType, RegisterClientSideType, RenderType} from "../../../shared/module/moduleClient";
 import {hasPermission} from "../../../shared/util/permissions";
 import {UsersConfigs} from "../config/types/UsersConfigs";
+import {ModerationConfigs} from "../config/types/ModerationConfigs";
+import Path from "path";
 
 const permissionReqs: Record<string, (string | string[])[]> = {};
 
@@ -20,12 +22,20 @@ export const register: RegisterClientSideType = (RegisterClientPage) => {
 
 const registerPages = (configs: AdminConfig, RegisterClientPage: ClientRegisterCallback) => {
   const usersConfigs = GetConfig<UsersConfigs>("client/admin/users.json");
+  const moderationConfigs = GetConfig<ModerationConfigs>("client/admin/moderation.json");
 
   if(usersConfigs.usersPageEnabled) {
     RegisterClientPage(usersConfigs.usersPageURL, {
       name: usersConfigs.usersPageName
     }, "./client/pages/users/UsersPage.tsx");
     permissionReqs[usersConfigs.usersPageURL] = ["admin", "module.admin.users"];
+  }
+
+  if(moderationConfigs.moderationPageEnabled) {
+    RegisterClientPage(Path.join(moderationConfigs.moderationPageURL, "/*").replace(/\\/g, "/"), {
+      name: moderationConfigs.moderationPageName
+    }, "./client/pages/moderation/ModerationPage.tsx");
+    permissionReqs[moderationConfigs.moderationPageURL] = ["admin", "module.admin.moderation"];
   }
 };
 

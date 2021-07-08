@@ -3,6 +3,7 @@ import {RegisterConfig} from "../../../shared/config/configFilesManager";
 export const registerConfigs = () => {
   RegisterConfig({name: "client/admin.json", default: config});
   RegisterConfig({name: "client/admin/users.json", default: usersConfig});
+  RegisterConfig({name: "client/admin/moderation.json", default: moderationConfig});
 };
 
 const config = {
@@ -23,4 +24,10 @@ const usersConfig = {
   usersPageEnabled: true,
   usersPageURL: "/admin/users",
   usersPageName: "Users"
+};
+
+const moderationConfig = {
+  moderationPageEnabled: true,
+  moderationPageURL: "/admin/moderation",
+  moderationPageName: "Moderation"
 };

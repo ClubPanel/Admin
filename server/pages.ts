@@ -2,12 +2,15 @@ import {AdminConfig} from "../config/types/AdminConfig";
 import {hasPermission} from "../../../shared/util/permissions";
 import User from "../../../server/database/models/user";
 import {dataFunctions} from "./server";
-import {UsersPageData} from "../shared/types/UsersPageTypes";
+import {UsersPageData, UsersPageUser} from "../shared/types/UsersPageTypes";
 import {Express} from "express";
 import {GetConfig} from "../../../shared/config/configStore";
 import {requireAuth} from "../../../server/util/auth";
 import {Setup} from "./routes";
 import {UsersConfigs} from "../config/types/UsersConfigs";
+import {ModerationConfigs} from "../config/types/ModerationConfigs";
+import {ModerationAction} from "../shared/types/ModerationPageTypes";
+import * as Path from "path";
 
 export const register = (app: Express) => {
   const configs = GetConfig<AdminConfig>("client/admin.json");
@@ -23,6 +26,7 @@ export const register = (app: Express) => {
 
 const registerPages = (configs: AdminConfig) => {
   const usersConfigs = GetConfig<UsersConfigs>("client/admin/users.json");
+  const moderationConfigs = GetConfig<ModerationConfigs>("client/admin/moderation.json");
 
   dataFunctions[usersConfigs.usersPageURL] = (userInfo) : Promise<object> => {
     return new Promise<object>((resolve, reject) => {
@@ -40,6 +44,20 @@ const registerPages = (configs: AdminConfig) => {
         }
 
         resolve(output);
+      });
+    });
+  };
+
+  dataFunctions[Path.join(moderationConfigs.moderationPageURL, "/*").replace(/\\/g, "/")] = (userInfo, session) : Promise<object> => {
+    return new Promise<object>((resolve, reject) => {
+      if(!hasPermission(userInfo.permissions, "admin", "module.admin.moderation")) return resolve({});
+
+      const actions: ModerationAction[] = session.user.modules["admin_moderation"] || [];
+      const user: UsersPageUser = {email: userInfo.email, permissions: userInfo.permissions, userId: userInfo.userId, username: userInfo.username};
+
+      resolve({
+        user,
+        actions
       });
     });
   };
