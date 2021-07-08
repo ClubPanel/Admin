@@ -13,5 +13,8 @@
   },
   "homepage": "https://github.com/ClubPanel/Admin#readme",
   "private": false,
-  "devDependencies": {}
+  "devDependencies": {},
+  "dependencies": {
+    "moment": "^2.29.1"
+  }
 }
