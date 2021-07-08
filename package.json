@@ -15,6 +15,7 @@
   "private": false,
   "devDependencies": {},
   "dependencies": {
-    "moment": "^2.29.1"
+    "moment": "^2.29.1",
+    "react-table": "^7.7.0"
   }
 }
