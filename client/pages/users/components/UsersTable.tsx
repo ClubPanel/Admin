@@ -1,18 +1,22 @@
-import {IconButton, Table, TableCaption, Tbody, Td, Th, Thead, Tr, useToast} from "@chakra-ui/react";
+import {Link, Table, TableCaption, Tbody, Td, Th, Thead, Tr, useToast} from "@chakra-ui/react";
 import {UsersPageUser} from "../../../../shared/types/UsersPageTypes";
 import React, {useState} from "react";
-import UserPermissions from "./UserPermissions";
-import {DeleteIcon, MinusIcon} from "@chakra-ui/icons";
-import {DeleteButton} from "../../../components/DeleteButton";
 import axios from "axios";
+import {Config} from "../../../../../../shared/config/types/config";
+import {GetConfig} from "../../../../../../shared/config/configStore";
+import {ModerationConfigs} from "../../../../config/types/ModerationConfigs";
+import UserPermissions from "./UserPermissions";
+import {DeleteButton} from "../../../components/DeleteButton";
 
-const UsersTable = ({ users, csrf } : { users: UsersPageUser[], csrf: string }) : JSX.Element => {
+const UsersTable = ({ users, csrf, config } : { users: UsersPageUser[], csrf: string, config: Record<string, Config> }) : JSX.Element => {
   const thProps = {color: "white", border: "1px solid white"};
   const tdProps = {border: "1px solid white"};
 
   const toast = useToast();
 
   const [usersArr, setUsers] = useState(users);
+
+  const moderationConfigs = GetConfig<ModerationConfigs>("client/admin/moderation.json", config);
 
   const deleteUserButton = (user: number) => {
     axios.post("/adminmodulebackend/deleteuser", {csrf, user}).then(res => {
@@ -62,6 +66,7 @@ const UsersTable = ({ users, csrf } : { users: UsersPageUser[], csrf: string }) 
           <Th {...thProps} isNumeric>ID</Th>
           <Th {...thProps}>Email</Th>
           <Th {...thProps}>Username</Th>
+          {moderationConfigs.moderationPageEnabled ? <Th {...thProps}>Moderation</Th> : null}
           <Th {...thProps}>Permissions</Th>
           <Th {...thProps}>Delete</Th>
         </Tr>
@@ -75,6 +80,7 @@ const UsersTable = ({ users, csrf } : { users: UsersPageUser[], csrf: string }) 
               <Td {...tdProps} isNumeric>{user.userId}</Td>
               <Td {...tdProps}>{user.email}</Td>
               <Td {...tdProps}>{user.username}</Td>
+              {moderationConfigs.moderationPageEnabled ? <Td {...tdProps}><Link href={moderationConfigs.moderationPageURL+"/"+user.userId} color="cyan" textDecor="underline">View moderation actions</Link></Td> : null}
               <Td {...tdProps} maxW="50vh">
                 <UserPermissions csrf={csrf} permissions={user.permissions} user={user.userId}/>
               </Td>

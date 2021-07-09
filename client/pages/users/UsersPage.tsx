@@ -12,7 +12,7 @@ const UsersPage = ({config, userInfo, data, csrf} : Partial<RenderProps>) : JSX.
       width="100%"
       overflowX="auto"
     >
-      <UsersTable users={users.users} csrf={csrf} />
+      <UsersTable users={users.users} csrf={csrf} config={config} />
     </Box>
   );
 };
