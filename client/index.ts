@@ -8,7 +8,8 @@ const output: ClientSide = {
     preRender,
     render
   },
-  priority: 5687
+  priority: 5687,
+  identifier: "admin"
 };
 
 export default output;
