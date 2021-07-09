@@ -5,8 +5,9 @@ import {requireBaseReferrer} from "../../../server/util/referrer";
 import {requireCSRF} from "../../../server/util/csrf";
 import {requirePermission} from "../../../server/util/permissions";
 import {hasPermission} from "../../../shared/util/permissions";
-import User from "../../../server/database/models/user";
+import User, {IUser} from "../../../server/database/models/user";
 import bodyParser from "body-parser";
+import {ModerationAction, ModerationType} from "../shared/types/ModerationPageTypes";
 
 interface UserPermissionData {
   permission: string;
@@ -122,5 +123,77 @@ export const Setup = (app: Express, configs: AdminConfig) => {
     await user.delete();
 
     res.status(200).send("Successfully deleted user!");
+  });
+
+  // @ts-ignore
+  app.post("/adminmodulebackend/createmoderationaction", requireBaseReferrer(), bodyParser.json(), requireCSRF(), requireAuth(), requirePermission("admin", "module.admin.moderation"), async (req, res) => {
+    if(!req.body) {
+      return res.status(400).send("A body is required!");
+    }
+
+    const data = <{user: number, duration: number, message: string, type: ModerationType}>req.body;
+
+    if(typeof(data.user) !== "number") {
+      return res.status(400).send("The user field must be a number!");
+    }
+    if(typeof(data.duration) !== "number") {
+      return res.status(400).send("The duration field must be a number!");
+    }
+    if(typeof(data.message) !== "string") {
+      return res.status(400).send("The message field must be a string!");
+    }
+    if(typeof(data.type) !== "number") {
+      return res.status(400).send("The type field must be a number!");
+    }
+
+    if(data.type < 0 || data.type > 3) {
+      return res.status(400).send("The type field is invalid!");
+    }
+    if(!data.message.trim()) {
+      return res.status(400).send("The message field is invalid!");
+    }
+
+    const user = await User.findOne({id: data.user});
+
+    if(!user) {
+      return res.status(400).send("The specified user does not exist!");
+    }
+
+    if(!user.modules["admin_moderation"]) user.modules["admin_moderation"] = [];
+    user.modules["admin_moderation"].push({type: data.type, duration: data.duration, message: data.message, issuer: req.session.user.id, date: Date.now()});
+    user.markModified("modules");
+
+    await user.save();
+
+    res.status(200).send("Successfully created moderation action!");
+  });
+
+  // @ts-ignore
+  app.post("/adminmodulebackend/deletemoderationaction", requireBaseReferrer(), bodyParser.json(), requireCSRF(), requireAuth(), requirePermission("admin", "module.admin.moderation"), async (req, res) => {
+    if(!req.body) {
+      return res.status(400).send("A body is required!");
+    }
+
+    const data = <{date: number, user: number}>req.body;
+
+    if(typeof(data.user) !== "number") {
+      return res.status(400).send("The user field must be a number!");
+    }
+    if(typeof(data.date) !== "number") {
+      return res.status(400).send("The date field must be a number!");
+    }
+
+    const user = await User.findOne({id: data.user});
+
+    if(!user) {
+      return res.status(400).send("The specified user does not exist!");
+    }
+
+    user.modules["admin_moderation"] = (<ModerationAction[]>user.modules["admin_moderation"] || <ModerationAction[]>[]).filter(action => action.date !== data.date);
+    user.markModified("modules");
+
+    await user.save();
+
+    res.status(200).send("Successfully deleted moderation action!");
   });
 };

@@ -2,7 +2,7 @@ import {DeleteIcon} from "@chakra-ui/icons";
 import {Button, IconButton, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useDisclosure} from "@chakra-ui/react";
 import React, {useRef} from "react";
 
-export const DeleteButton = ({index, callback, warningMessage, aria} : { index: number, callback: Function, warningMessage: string, aria: string }) : JSX.Element => {
+export const DeleteButton = ({index, callback, warningMessage, aria} : { index: any, callback: Function, warningMessage: string, aria: string }) : JSX.Element => {
   const triggerButton = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
 

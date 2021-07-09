@@ -9,7 +9,7 @@ export interface ModerationPageData {
 export interface ModerationAction {
   type: ModerationType;
   issuer: number;
-  message: number;
+  message: string;
   date: number;
   duration: number;
 }
