@@ -51,11 +51,14 @@ const registerPages = (configs: AdminConfig) => {
     });
   };
 
-  dataFunctions[Path.join(moderationConfigs.moderationPageURL, "/*").replace(/\\/g, "/")] = async (userInfo, session) : Promise<object> => {
+  dataFunctions[Path.join(moderationConfigs.moderationPageURL, "/:id").replace(/\\/g, "/")] = async (userInfo, session, params) : Promise<object> => {
     if(!hasPermission(userInfo.permissions, "admin", "module.admin.moderation")) return {};
 
-    const actions: ModerationAction[] = session.user.modules["admin_moderation"] || [];
-    const user: UsersPageUser = {email: userInfo.email, permissions: userInfo.permissions, userId: userInfo.userId, username: userInfo.username};
+    const givenUser = await User.findOne({id: params["id"]});
+    if(!givenUser) return {};
+
+    const actions: ModerationAction[] = givenUser.modules["admin_moderation"] || [];
+    const user: UsersPageUser = {email: givenUser.email, permissions: givenUser.permissions, userId: givenUser.id, username: givenUser.username};
     const issuers: Record<number, IssuerInfo> = {};
 
     for (const action of actions) {

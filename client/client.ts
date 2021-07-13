@@ -34,7 +34,7 @@ const registerPages = (configs: AdminConfig, RegisterClientPage: ClientRegisterC
   }
 
   if(moderationConfigs.moderationPageEnabled) {
-    RegisterClientPage(Path.join(moderationConfigs.moderationPageURL, "/*").replace(/\\/g, "/"), {
+    RegisterClientPage(Path.join(moderationConfigs.moderationPageURL, "/:id").replace(/\\/g, "/"), {
       name: moderationConfigs.moderationPageName
     }, "./client/pages/moderation/ModerationPage.tsx");
     permissionReqs[moderationConfigs.moderationPageURL] = ["admin", "module.admin.moderation"];
