@@ -4,5 +4,4 @@ export interface ModerationConfigs extends Config {
   moderationPageEnabled: boolean;
   moderationPageURL: string;
   moderationPageName: string;
-
 }

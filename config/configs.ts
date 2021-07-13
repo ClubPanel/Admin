@@ -2,11 +2,13 @@ import {RegisterConfig} from "../../../shared/config/configFilesManager";
 import {AdminConfig} from "./types/AdminConfig";
 import {UsersConfigs} from "./types/UsersConfigs";
 import {ModerationConfigs} from "./types/ModerationConfigs";
+import {DisabledConfigs} from "./types/DisabledConfigs";
 
 export const registerConfigs = () => {
   RegisterConfig({name: "client/admin.json", default: config});
   RegisterConfig({name: "client/admin/users.json", default: usersConfig});
   RegisterConfig({name: "client/admin/moderation.json", default: moderationConfig});
+  RegisterConfig({name: "client/admin/disabled.json", default: disabledConfig});
 };
 
 const config: AdminConfig = {
@@ -19,6 +21,11 @@ const config: AdminConfig = {
       text: "Users",
       aria: "Users Page",
       url: "/admin/users"
+    },
+    {
+      text: "Disabled Accounts",
+      aria: "Disabled Accounts Page",
+      url: "/admin/disabled"
     }
   ]
 };
@@ -33,4 +40,10 @@ const moderationConfig: ModerationConfigs = {
   moderationPageEnabled: true,
   moderationPageURL: "/admin/moderation",
   moderationPageName: "Moderation"
+};
+
+const disabledConfig: DisabledConfigs = {
+  disabledPageEnabled: true,
+  disabledPageURL: "/admin/disabled",
+  disabledPageName: "Disabled Accounts"
 };

@@ -1,5 +1,6 @@
-import User, {IUser} from "../../../server/database/models/user";
+import User, {IUser, UserInfo} from "../../../server/database/models/user";
 import {ModerationAction, ModerationType} from "./types/ModerationPageTypes";
+import {UsersPageUser} from "./types/UsersPageTypes";
 
 export const getActiveAction = (user: IUser) : ModerationAction => {
   if(!user?.modules?.admin_moderation || user.modules.admin_moderation.length < 1) return null;
@@ -20,22 +21,27 @@ export const getActiveAction = (user: IUser) : ModerationAction => {
   return action;
 };
 
-export const getActiveActions = () : Promise<{user: IUser, action: ModerationAction}[]> => {
-  return new Promise<{user: IUser; action: ModerationAction}[]>((resolve, reject) => {
+export const getActiveActions = () : Promise<ActiveActionsType[]> => {
+  return new Promise<ActiveActionsType[]>((resolve, reject) => {
     User.find({}, (err, users) => {
       if(err) return reject(err);
 
-      const output: {user: IUser, action: ModerationAction}[] = [];
+      const output: ActiveActionsType[] = [];
 
       for (const user of users) {
         const action = getActiveAction(user);
         if(!action) continue;
 
         //@ts-ignore
-        output.push({user: user.toObject(), action});
+        output.push({user: {email: user.email, username: user.username, userId: user.id, permissions: user.permissions}, action});
       }
 
       resolve(output);
     });
   });
 };
+
+export interface ActiveActionsType {
+  user: UsersPageUser;
+  action: ModerationAction;
+}

@@ -7,6 +7,7 @@ import {hasPermission} from "../../../shared/util/permissions";
 import {UsersConfigs} from "../config/types/UsersConfigs";
 import {ModerationConfigs} from "../config/types/ModerationConfigs";
 import Path from "path";
+import {DisabledConfigs} from "../config/types/DisabledConfigs";
 
 const permissionReqs: Record<string, (string | string[])[]> = {};
 
@@ -23,6 +24,7 @@ export const register: RegisterClientSideType = (RegisterClientPage) => {
 const registerPages = (configs: AdminConfig, RegisterClientPage: ClientRegisterCallback) => {
   const usersConfigs = GetConfig<UsersConfigs>("client/admin/users.json");
   const moderationConfigs = GetConfig<ModerationConfigs>("client/admin/moderation.json");
+  const disabledConfigs = GetConfig<DisabledConfigs>("client/admin/disabled.json");
 
   if(usersConfigs.usersPageEnabled) {
     RegisterClientPage(usersConfigs.usersPageURL, {
@@ -36,6 +38,13 @@ const registerPages = (configs: AdminConfig, RegisterClientPage: ClientRegisterC
       name: moderationConfigs.moderationPageName
     }, "./client/pages/moderation/ModerationPage.tsx");
     permissionReqs[moderationConfigs.moderationPageURL] = ["admin", "module.admin.moderation"];
+  }
+
+  if(disabledConfigs.disabledPageEnabled) {
+    RegisterClientPage(disabledConfigs.disabledPageURL, {
+      name: disabledConfigs.disabledPageName
+    }, "./client/pages/disabled/DisabledPage.tsx");
+    permissionReqs[disabledConfigs.disabledPageURL] = ["admin", "module.admin.disabled"];
   }
 };
 

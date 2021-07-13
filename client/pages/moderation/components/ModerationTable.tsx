@@ -107,7 +107,6 @@ const ModerationTable = ({ user, csrf, currentUser } : { user: ModerationPageDat
       <Tbody>
         {actions.map((action, idx) => {
           const dateSeconds = Math.floor(action.date / 1000);
-          const dateNow = Date.now();
           const date = new Date(action.date);
 
           return (

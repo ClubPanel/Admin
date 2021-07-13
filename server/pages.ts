@@ -11,6 +11,8 @@ import {UsersConfigs} from "../config/types/UsersConfigs";
 import {ModerationConfigs} from "../config/types/ModerationConfigs";
 import {IssuerInfo, ModerationAction} from "../shared/types/ModerationPageTypes";
 import * as Path from "path";
+import {DisabledConfigs} from "../config/types/DisabledConfigs";
+import {ActiveActionsType, getActiveActions} from "../shared/moderation";
 
 export const register = (app: Express) => {
   const configs = GetConfig<AdminConfig>("client/admin.json");
@@ -27,6 +29,7 @@ export const register = (app: Express) => {
 const registerPages = (configs: AdminConfig) => {
   const usersConfigs = GetConfig<UsersConfigs>("client/admin/users.json");
   const moderationConfigs = GetConfig<ModerationConfigs>("client/admin/moderation.json");
+  const disabledConfigs = GetConfig<DisabledConfigs>("client/admin/disabled.json");
 
   dataFunctions[usersConfigs.usersPageURL] = (userInfo) : Promise<object> => {
     return new Promise<object>((resolve, reject) => {
@@ -63,6 +66,31 @@ const registerPages = (configs: AdminConfig) => {
         issuers[action.issuer] = {email: "Unknown", username: "Unknown"};
       } else {
         issuers[action.issuer] = {email: issuer.email, username: issuer.username};
+      }
+    }
+
+    return {
+      user,
+      actions,
+      issuers
+    };
+  };
+
+  dataFunctions[disabledConfigs.disabledPageURL] = async (userInfo, session) : Promise<object> => {
+    if(!hasPermission(userInfo.permissions, "admin", "module.admin.disabled")) return {};
+
+    const actions: ActiveActionsType[] = await getActiveActions();
+    const user: UsersPageUser = {email: userInfo.email, permissions: userInfo.permissions, userId: userInfo.userId, username: userInfo.username};
+    const issuers: Record<number, IssuerInfo> = {};
+
+    for (const action of actions) {
+      if(issuers.hasOwnProperty(action.action.issuer)) continue;
+
+      const issuer = await User.findOne({id: action.action.issuer});
+      if(!issuer) {
+        issuers[action.action.issuer] = {email: "Unknown", username: "Unknown"};
+      } else {
+        issuers[action.action.issuer] = {email: issuer.email, username: issuer.username};
       }
     }
 
