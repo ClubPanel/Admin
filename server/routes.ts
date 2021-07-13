@@ -7,7 +7,9 @@ import {requirePermission} from "../../../server/util/permissions";
 import {hasPermission} from "../../../shared/util/permissions";
 import User, {IUser} from "../../../server/database/models/user";
 import bodyParser from "body-parser";
-import {ModerationAction, ModerationType} from "../shared/types/ModerationPageTypes";
+import {ModerationAction, ModerationType, ModerationTypesMap} from "../shared/types/ModerationPageTypes";
+import {getActiveAction} from "../shared/moderation";
+import moment from "moment";
 
 interface UserPermissionData {
   permission: string;
@@ -15,6 +17,18 @@ interface UserPermissionData {
 }
 
 export const Setup = (app: Express, configs: AdminConfig) => {
+  app.use((req, res, next) => {
+    if(hasPermission(req.session?.user?.permissions, "admin")) return next();
+
+    const action = getActiveAction(req.session?.user);
+    if(action == null) return next();
+
+    const dateSeconds = Math.floor(action.date / 1000);
+    const date = new Date(action.date);
+
+    res.status(403).send("Your account is currently disabled! You have a(n) " + ModerationTypesMap[action.type] + ", which will expire at " + moment(date).add(action.duration, "seconds").format("dddd, MMMM Do YYYY, h:mm:ss a") + ", " + moment.duration((dateSeconds+action.duration)-moment().unix(), "seconds").humanize(true));
+  });
+
   // @ts-ignore
   app.post("/adminmodulebackend/adduserpermission", requireBaseReferrer(), bodyParser.json(), requireCSRF(), requireAuth(), requirePermission("admin", "module.admin.users"), async (req, res) => {
     if(!req.body) {
