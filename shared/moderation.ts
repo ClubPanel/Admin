@@ -8,13 +8,17 @@ export const getActiveAction = (user: IUser) : ModerationAction => {
   const curDate = Date.now();
 
   let action: ModerationAction = null;
+  let actionExpires = 0;
 
   for (const moderationAction of <ModerationAction[]>user.modules.admin_moderation) {
     if(![ModerationType.Suspension, ModerationType.Expulsion].includes(moderationAction.type)) continue;
 
-    const until = moderationAction.date + moderationAction.duration;
-    if(until > curDate && (action == null || until > action.date + action.duration)) {
+    const expires = moderationAction.date + (moderationAction.duration * 1000);
+
+    //If it hasn't already expired and it expires after the current action.
+    if(expires > curDate && expires > actionExpires) {
       action = moderationAction;
+      actionExpires = expires;
     }
   }
 
@@ -23,7 +27,7 @@ export const getActiveAction = (user: IUser) : ModerationAction => {
 
 export const getActiveActions = () : Promise<ActiveActionsType[]> => {
   return new Promise<ActiveActionsType[]>((resolve, reject) => {
-    User.find({}, (err, users) => {
+    User.find((err, users) => {
       if(err) return reject(err);
 
       const output: ActiveActionsType[] = [];
@@ -32,7 +36,6 @@ export const getActiveActions = () : Promise<ActiveActionsType[]> => {
         const action = getActiveAction(user);
         if(!action) continue;
 
-        //@ts-ignore
         output.push({user: {email: user.email, username: user.username, userId: user.id, permissions: user.permissions}, action});
       }
 

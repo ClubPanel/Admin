@@ -42,10 +42,10 @@ const DisabledTable = ({actions, user, issuers, config}: { actions: ActiveAction
 
           return (
             <Tr key={action.action.date}>
-              <Td {...tdProps} isNumeric>{user.userId}</Td>
-              <Td {...tdProps}>{user.email}</Td>
-              <Td {...tdProps}>{user.username}</Td>
-              {moderationConfigs.moderationPageEnabled ? <Td {...tdProps}><Link href={moderationConfigs.moderationPageURL+"/"+user.userId} color="cyan" textDecor="underline">View moderation actions</Link></Td> : null}
+              <Td {...tdProps} isNumeric>{action.user.userId}</Td>
+              <Td {...tdProps}>{action.user.email}</Td>
+              <Td {...tdProps}>{action.user.username}</Td>
+              {moderationConfigs.moderationPageEnabled ? <Td {...tdProps}><Link href={moderationConfigs.moderationPageURL+"/"+action.user.userId} color="cyan" textDecor="underline">View moderation actions</Link></Td> : null}
               <Td {...tdProps}>{ModerationTypesMap[action.action.type]}</Td>
               <Td {...tdProps}>{issuers[action.action.issuer].username} (UserID: {action.action.issuer}, Email: {issuers[action.action.issuer].email})</Td>
               <Td {...tdProps}>{action.action.message}</Td>
