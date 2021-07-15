@@ -3,7 +3,6 @@ import {preRender, register, render} from "./client";
 
 const output: ClientSide = {
   register,
-  configs: ["client/admin.json"],
   events: {
     preRender,
     render
