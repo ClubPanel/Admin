@@ -20,7 +20,7 @@ export const register = (app: Express) => {
   registerPages(configs);
 
   for (const key of Object.keys(dataFunctions)) {
-    app.use(key, requireAuth());
+    app.get(key, requireAuth());
   }
 
   Setup(app, configs);
