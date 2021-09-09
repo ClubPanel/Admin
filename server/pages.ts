@@ -13,6 +13,8 @@ import {IssuerInfo, ModerationAction} from "../shared/types/ModerationPageTypes"
 import * as Path from "path";
 import {DisabledConfigs} from "../config/types/DisabledConfigs";
 import {ActiveActionsType, getActiveActions} from "../shared/moderation";
+import {AttendanceConfig} from "../config/types/AttendanceConfig";
+import {getAttendances} from "./helpers/attendance";
 
 export const register = (app: Express) => {
   const configs = GetConfig<AdminConfig>("client/admin.json");
@@ -30,6 +32,7 @@ const registerPages = (configs: AdminConfig) => {
   const usersConfigs = GetConfig<UsersConfigs>("client/admin/users.json");
   const moderationConfigs = GetConfig<ModerationConfigs>("client/admin/moderation.json");
   const disabledConfigs = GetConfig<DisabledConfigs>("client/admin/disabled.json");
+  const attendanceConfigs = GetConfig<AttendanceConfig>("client/admin/attendance.json");
 
   dataFunctions[usersConfigs.usersPageURL] = (userInfo) : Promise<object> => {
     return new Promise<object>((resolve, reject) => {
@@ -101,6 +104,20 @@ const registerPages = (configs: AdminConfig) => {
       user,
       actions,
       issuers
+    };
+  };
+
+  dataFunctions[attendanceConfigs.attendancePageURL] = async (userInfo, session) : Promise<object> => {
+    if(!hasPermission(userInfo.permissions, "admin", "module.admin.attendance")) return {};
+
+    const user: UsersPageUser = {email: userInfo.email, permissions: userInfo.permissions, userId: userInfo.userId, username: userInfo.username};
+
+    const {attendance, users} = await getAttendances();
+
+    return {
+      user,
+      attendance,
+      users
     };
   };
 };

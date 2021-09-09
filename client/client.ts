@@ -8,6 +8,7 @@ import {UsersConfigs} from "../config/types/UsersConfigs";
 import {ModerationConfigs} from "../config/types/ModerationConfigs";
 import Path from "path";
 import {DisabledConfigs} from "../config/types/DisabledConfigs";
+import {AttendanceConfig} from "../config/types/AttendanceConfig";
 
 const permissionReqs: Record<string, (string | string[])[]> = {};
 
@@ -25,6 +26,7 @@ const registerPages = (configs: AdminConfig, RegisterClientPage: ClientRegisterC
   const usersConfigs = GetConfig<UsersConfigs>("client/admin/users.json");
   const moderationConfigs = GetConfig<ModerationConfigs>("client/admin/moderation.json");
   const disabledConfigs = GetConfig<DisabledConfigs>("client/admin/disabled.json");
+  const attendanceConfigs = GetConfig<AttendanceConfig>("client/admin/attendance.json");
 
   if(usersConfigs.usersPageEnabled) {
     RegisterClientPage(usersConfigs.usersPageURL, {
@@ -45,6 +47,13 @@ const registerPages = (configs: AdminConfig, RegisterClientPage: ClientRegisterC
       name: disabledConfigs.disabledPageName
     }, "./client/pages/disabled/DisabledPage.tsx");
     permissionReqs[disabledConfigs.disabledPageURL] = ["admin", "module.admin.disabled"];
+  }
+
+  if(attendanceConfigs.attendancePageEnabled) {
+    RegisterClientPage(attendanceConfigs.attendancePageURL, {
+      name: attendanceConfigs.attendancePageName
+    }, "./client/pages/attendance/AttendancePage.tsx");
+    permissionReqs[attendanceConfigs.attendancePageURL] = ["admin", "module.admin.attendance"];
   }
 };
 

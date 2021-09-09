@@ -210,4 +210,61 @@ export const Setup = (app: Express, configs: AdminConfig) => {
 
     res.status(200).send("Successfully deleted moderation action!");
   });
+
+  // @ts-ignore
+  app.post("/adminmodulebackend/deleteattendance", requireBaseReferrer(), bodyParser.json(), requireCSRF(), requireAuth(), requirePermission("admin", "module.admin.attendance"), async (req, res) => {
+    if(!req.body) {
+      return res.status(400).send("A body is required!");
+    }
+
+    const data = <{id: number}>req.body;
+
+    if(typeof(data.id) !== "number") {
+      return res.status(400).send("The id field must be a number!");
+    }
+
+    const user = await User.findOne({id: data.id});
+
+    if(!user) {
+      return res.status(400).send("The specified user does not exist!");
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+
+    user.modules["admin_attendance"] = (<string[]>user.modules["admin_attendance"] || <string[]>[]).filter(date => date !== today);
+    user.markModified("modules");
+
+    await user.save();
+
+    res.status(200).send("Successfully deleted attendance log!");
+  });
+
+  // @ts-ignore
+  app.post("/adminmodulebackend/createattendance", requireBaseReferrer(), bodyParser.json(), requireCSRF(), requireAuth(), requirePermission("admin", "module.admin.attendance"), async (req, res) => {
+    if(!req.body) {
+      return res.status(400).send("A body is required!");
+    }
+
+    const data = <{id: number}>req.body;
+
+    if(typeof(data.id) !== "number") {
+      return res.status(400).send("The id field must be a number!");
+    }
+
+    const user = await User.findOne({id: data.id});
+
+    if(!user) {
+      return res.status(400).send("The specified user does not exist!");
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+
+    if(!user.modules["admin_attendance"]) user.modules["admin_attendance"] = [];
+    if(!user.modules["admin_attendance"].includes(today)) user.modules["admin_attendance"].push(today);
+    user.markModified("modules");
+
+    await user.save();
+
+    res.status(200).send("Successfully created attendance log!");
+  });
 };
