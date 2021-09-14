@@ -1,4 +1,4 @@
-import {IMenuLink} from "../../../components/menu/menuItems";
+import {IMenuLink} from "../../../components/menu/IMenuLink";
 
 export const MenuLinks: IMenuLink[] = [];
 
